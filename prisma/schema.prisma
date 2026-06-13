@@ -1,0 +1,227 @@
+// Prisma Schema - AI 驱动全栈 SaaS 数据仪表盘
+// 数据库: PostgreSQL
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── 用户表 ───────────────────────────────────────────
+model User {
+  id                 String       @id @default(cuid())
+  email              String       @unique
+  name               String?
+  passwordHash       String       @map("password_hash")
+  role               Role         @default(MEMBER)
+  avatarUrl          String?      @map("avatar_url")
+  // AI 私有大模型密钥 (v1 - 保留向后兼容)
+  openaiApiKey       String?      @map("openai_api_key")
+  anthropicApiKey    String?      @map("anthropic_api_key")
+  deepseekApiKey     String?      @map("deepseek_api_key")
+  preferredAiProvider AiProvider? @map("preferred_ai_provider")
+  // AI 供应商配置 (v2 - JSON 可扩展存储)
+  aiProviders        Json         @default("[]") @map("ai_providers")
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+
+  ownedTeams   Team[]       @relation("TeamOwner")
+  teamMembers  TeamMember[]
+  dashboards   Dashboard[]
+  dataSources     DataSource[]
+  sentInvitations     Invitation[] @relation("Inviter")
+  receivedInvitations Invitation[] @relation("Invitee")
+
+  @@map("users")
+}
+
+// ─── 团队表 ───────────────────────────────────────────
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  ownerId   String   @map("owner_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  owner       User         @relation("TeamOwner", fields: [ownerId], references: [id])
+  members     TeamMember[]
+  dashboards  Dashboard[]
+  invitations Invitation[]
+
+  @@map("teams")
+}
+
+// ─── 团队成员表 ────────────────────────────────────────
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String   @map("team_id")
+  userId   String   @map("user_id")
+  role     TeamRole @default(VIEWER)
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+// ─── 仪表盘表 ─────────────────────────────────────────
+model Dashboard {
+  id           String   @id @default(cuid())
+  teamId       String   @map("team_id")
+  userId       String   @map("user_id")
+  dataSourceId String?  @map("data_source_id")
+  name         String
+  description  String?
+  config       Json     @default("{}")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  team       Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dataSource DataSource?  @relation(fields: [dataSourceId], references: [id], onDelete: SetNull)
+  widgets    DataWidget[]
+
+  @@map("dashboards")
+}
+
+// ─── 数据组件表 ────────────────────────────────────────
+model DataWidget {
+  id           String     @id @default(cuid())
+  dashboardId  String     @map("dashboard_id")
+  dataSourceId String?    @map("data_source_id")
+  type         WidgetType
+  title        String
+  dataSource   Json       @default("{}")
+  position     Json       @default("{}")
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  dashboard     Dashboard    @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  boundDataSource DataSource? @relation(fields: [dataSourceId], references: [id], onDelete: SetNull)
+
+  @@map("data_widgets")
+}
+
+// ─── 数据源主表 ───────────────────────────────────────
+model DataSource {
+  id          String           @id @default(cuid())
+  userId      String           @map("user_id")
+  name        String
+  description String?
+  type        DataSourceType
+  status      DataSourceStatus @default(ACTIVE)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileSource  FileSource?
+  dbSource    DbSource?
+  dashboards  Dashboard[]
+  widgets     DataWidget[]
+
+  @@map("data_sources")
+}
+
+// ─── 文件数据源子表 ───────────────────────────────────
+model FileSource {
+  id           String   @id @default(cuid())
+  dataSourceId String   @unique @map("data_source_id")
+  fileType     FileType
+  fileUrl      String   @map("file_url")
+  fileName     String   @map("file_name")
+  fileSize     Int      @map("file_size")
+  rowCount     Int      @default(0) @map("row_count")
+  columnInfo   Json     @default("[]") @map("column_info")
+
+  dataSource DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
+
+  @@map("file_sources")
+}
+
+// ─── 外部数据库连接子表 ───────────────────────────────
+model DbSource {
+  id           String @id @default(cuid())
+  dataSourceId String @unique @map("data_source_id")
+  dbType       String @map("db_type")
+  host         String
+  port         Int
+  dbName       String  @map("db_name")
+  dbUser       String  @map("db_user")
+  dbPwd        String  @map("db_pwd")
+  tableList    Json    @default("[]") @map("table_list")
+
+  dataSource DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
+
+  @@map("db_sources")
+}
+
+// ─── 枚举类型 ─────────────────────────────────────────
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  VIEWER
+}
+
+enum WidgetType {
+  LINE
+  BAR
+  PIE
+  TABLE
+  STAT
+}
+
+enum AiProvider {
+  openai
+  anthropic
+  deepseek
+}
+
+enum DataSourceType {
+  file
+  external_db
+}
+
+enum DataSourceStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+}
+
+enum FileType {
+  csv
+  excel
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+// ─── 团队邀请表 ──────────────────────────────────────
+model Invitation {
+  id        String           @id @default(cuid())
+  teamId    String           @map("team_id")
+  inviterId String           @map("inviter_id")
+  inviteeId String           @map("invitee_id")
+  role      TeamRole         @default(VIEWER)
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  team    Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inviter User @relation("Inviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee User @relation("Invitee", fields: [inviteeId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, inviteeId, status])
+  @@map("invitations")
+}
