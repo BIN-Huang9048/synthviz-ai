@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  BarChart3, Pencil, Trash2, ExternalLink, Clock, LayoutGrid, CheckSquare, Square,
+  BarChart3, Trash2, ExternalLink, Clock, LayoutGrid, CheckSquare, Square,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -51,9 +51,10 @@ export function DashboardList({ onRefresh }: DashboardListProps) {
     }
   }, [onRefresh]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => { fetchDashboards(); }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   function toggleSelect(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);

@@ -25,10 +25,12 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-800">
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.png" alt="Logo" className="h-8 w-8 rounded-lg object-contain" />
             <span className="text-lg font-bold text-violet-600">锐鹰数视</span>
           </Link>
         )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         {collapsed && <img src="/logo.png" alt="Logo" className="mx-auto h-7 w-7 rounded-lg object-contain" />}
         <button onClick={onToggle} className={cn("rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300", collapsed && "mx-auto mt-4")}>
           <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />

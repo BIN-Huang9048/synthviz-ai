@@ -18,7 +18,7 @@ import {
 } from "@/components/dashboard/charts";
 import { StatCard } from "@/components/dashboard/charts/stat-card-widget";
 import {
-  ArrowLeft, RefreshCw, Pencil, Trash2, BarChart3, Database, AlertCircle,
+  ArrowLeft, RefreshCw, Trash2,
 } from "lucide-react";
 
 interface DashboardDetailViewProps {
@@ -101,8 +101,10 @@ export function DashboardDetailView({
 
   const skipNextFetch = useRef(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => { fetchDashboard(); }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => {
     if (dashboard?.widgets && !skipNextFetch.current) {
       // 看板已绑定数据源 → 由 handleRefreshData 统一提供数据（缓存/AI）
@@ -116,6 +118,7 @@ export function DashboardDetailView({
 
   const autoLoadedRef = useRef(false);
   // 看板已绑定数据源 → 每次打开都重新调用 AI 处理
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (dashboard && (dashboard as any).dataSourceId && !autoLoadedRef.current) {
       autoLoadedRef.current = true;

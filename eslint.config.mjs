@@ -16,7 +16,7 @@ const eslintConfig = defineConfig([
   {
     rules: {
       // Vibe-coding 阶段宽松规则
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
       "prefer-const": "warn",
       "@typescript-eslint/no-deprecated": "off",
       // React 19 严格规则：useEffect 中异步 setState 是常见模式

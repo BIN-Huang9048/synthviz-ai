@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 function generateRevenueData(months: number) {
   const data = [];
   const now = new Date();
-  let baseRevenue = 85000;
+  const baseRevenue = 85000;
 
   for (let i = months - 1; i >= 0; i--) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);

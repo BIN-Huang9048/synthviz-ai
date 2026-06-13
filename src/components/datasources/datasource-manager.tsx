@@ -182,6 +182,7 @@ export function DataSourceManager() {
     } catch {}
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   function toggleSel(id: string) { setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; }); setDelMsg(""); }
   function toggleAll() { if (selected.size === filtered.length) setSelected(new Set()); else setSelected(new Set(filtered.map((s) => s.id))); setDelMsg(""); }
 

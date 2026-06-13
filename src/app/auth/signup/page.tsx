@@ -19,6 +19,7 @@ export default function SignUpPage() {
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.10)" }} />
 
         <div className="max-w-md text-center relative z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.png" alt="Logo"
             className="mx-auto h-20 w-20 mb-6 rounded-2xl object-contain bg-white/10 p-2 ring-1 ring-white/20"
@@ -56,6 +57,7 @@ export default function SignUpPage() {
         style={{ boxShadow: "-4px 0 16px rgba(0,0,0,0.08)" }}
       >
         <div className="mb-8 text-center lg:hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="Logo" className="mx-auto h-12 w-12 rounded-xl object-contain" />
           <h2 className="mt-3 text-2xl font-bold text-gray-900">锐鹰数视</h2>
         </div>

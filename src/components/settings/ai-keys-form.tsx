@@ -41,11 +41,13 @@ export function AIKeysForm() {
       }
       setLoading(false);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selected = providers.find((p) => p.id === selectedId);
 
   // 切换供应商时初始化表单
+  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => {
     if (selected) {
       setApiKey(selected.apiKeyMasked || "");

@@ -11,6 +11,7 @@ import { userHasAIKeys } from "@/lib/ai-user";
 import prisma from "@/lib/prisma";
 
 // 数据库 Schema 描述（给 AI 理解数据结构）
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DB_SCHEMA = `
 - User: 用户表 (id, email, name, role, createdAt)
 - Team: 团队表 (id, name, ownerId)

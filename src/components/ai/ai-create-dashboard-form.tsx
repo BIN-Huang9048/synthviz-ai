@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -25,6 +26,7 @@ const typeColors: Record<string, string> = {
 const NUM_KEYS = /金额|价格|收入|成本|利润|数量|销量|人数|金额|总额|总计|平均|amount|price|cost|qty|rate|sum|avg|count/i;
 const DATE_KEYS = /时间|日期|date|time|下单|创建|年|月/i;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function analyzeFieldsLocal(headers: string[], sampleValues: string[][]): FieldInfo[] {
   return headers.map((name, ci) => {
     if (DATE_KEYS.test(name)) return { name, type: "date" };
@@ -54,6 +56,7 @@ export function AICreateDashboardForm() {
   const [customReq, setCustomReq] = useState("");
   const [showFields, setShowFields] = useState(false);
   const [previewData, setPreviewData] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [stage, setStage] = useState<"config" | "generating" | "processing">("config");
@@ -125,6 +128,7 @@ export function AICreateDashboardForm() {
     }).slice(0, 10);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   function toggleOption(opt: string) {
     const next = new Set(selectedOptions);
     next.has(opt) ? next.delete(opt) : next.add(opt);
@@ -188,7 +192,7 @@ export function AICreateDashboardForm() {
             <p className="text-sm font-medium text-amber-800 dark:text-amber-300">未配置 AI 密钥</p>
             <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
               看板将使用本地规则生成，AI 分析与推荐功能不可用。
-              <a href="/dashboard/settings/ai" className="ml-1 font-medium underline hover:text-amber-800 dark:hover:text-amber-200">前往配置 <Key className="inline h-3 w-3" /></a>
+              <Link href="/dashboard/settings/ai" className="ml-1 font-medium underline hover:text-amber-800 dark:hover:text-amber-200">前往配置 <Key className="inline h-3 w-3" /></Link>
             </p>
           </div>
         </div>

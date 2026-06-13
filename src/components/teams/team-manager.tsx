@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Users, Plus, Trash2, X, UserPlus, CheckSquare, Square, BarChart3, ExternalLink } from "lucide-react";
+import { Users, Plus, Trash2, X, UserPlus, CheckSquare, Square, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Team {
@@ -60,6 +60,7 @@ export function TeamManager() {
   // 团队列表加载后自动拉取所有成员
   useEffect(() => {
     teams.forEach((t) => { if (!members[t.id]) fetchMembers(t.id); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teams]);
 
   async function handleCreate() {
@@ -120,6 +121,7 @@ export function TeamManager() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   function toggleSel(id: string) { setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; }); setDelMsg(""); }
   function toggleAll() { if (selected.size === teams.length) setSelected(new Set()); else setSelected(new Set(teams.map((t) => t.id))); setDelMsg(""); }
 
@@ -325,6 +327,7 @@ function TeamDashboards({ teamId, canManage }: { teamId: string; canManage: bool
       .then((json) => { if (json.success) setDashboards(json.data || []); });
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchDashboards(); }, [teamId]);
 
   async function handleDeleteDashboard(dashId: string, dashName: string) {

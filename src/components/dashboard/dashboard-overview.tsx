@@ -8,7 +8,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
-import { Button } from "@/components/ui/button";
 import { DashboardList } from "@/components/dashboard/dashboard-list";
 import { AIQueryBox } from "@/components/ai/ai-query-box";
 import { BarChart3, LayoutDashboard, Database } from "lucide-react";

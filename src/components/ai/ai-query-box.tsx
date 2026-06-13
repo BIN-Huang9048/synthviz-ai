@@ -4,6 +4,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { LineChartWidget, BarChartWidget, PieChartWidget, DataTableWidget } from "@/components/dashboard/charts";
@@ -98,7 +99,7 @@ export function AIQueryBox() {
               <p className="text-sm font-medium text-amber-800 dark:text-amber-300">未配置 AI 密钥</p>
               <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
                 查询将使用关键词匹配返回模拟数据。
-                <a href="/dashboard/settings/ai" className="ml-1 font-medium underline hover:text-amber-800 dark:hover:text-amber-200">前往配置 <Key className="inline h-3 w-3" /></a>
+                <Link href="/dashboard/settings/ai" className="ml-1 font-medium underline hover:text-amber-800 dark:hover:text-amber-200">前往配置 <Key className="inline h-3 w-3" /></Link>
               </p>
             </div>
           </div>
