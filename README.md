@@ -33,6 +33,10 @@
 
 ## 📖 项目简介
 
+<a href="https://synthviz-ai.vercel.app" target="_blank">
+  <img src="https://img.shields.io/badge/在线演示-点击体验-blue?style=for-the-badge&logo=vercel" alt="在线演示">
+</a>
+
 **锐鹰数视** 是一个 AI 智能数据可视化平台。用户只需上传数据集（CSV / Excel）或连接外部数据库，AI 即可自动分析字段结构、智能推荐可视化需求，并一键生成包含折线图、柱状图、饼图、表格、统计卡片的交互式数据看板。
 
 ### 核心价值
