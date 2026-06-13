@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Sparkles, Wand2, Check, ChevronDown, ChevronUp, Database, Hash, Calendar, Tag, Type, FileText, Users } from "lucide-react";
+import { Sparkles, Wand2, Check, ChevronDown, ChevronUp, Database, Hash, Calendar, Tag, Type, FileText, Users, AlertTriangle, Key } from "lucide-react";
 import { setCachedDashboard } from "@/lib/dashboard-cache";
 
 type FieldInfo = { name: string; type: "date" | "number" | "category" | "text" };
@@ -57,6 +57,7 @@ export function AICreateDashboardForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [stage, setStage] = useState<"config" | "generating" | "processing">("config");
+  const [hasAIKeys, setHasAIKeys] = useState<boolean | null>(null); // null = 检查中
 
   // 分类数据源
   const fileSources = dataSources.filter((ds) => ds.type === "file");
@@ -68,6 +69,14 @@ export function AICreateDashboardForm() {
   useEffect(() => {
     fetch("/api/datasources").then((r) => r.json()).then((json) => { if (json.success) setDataSources(json.data || []); });
     fetch("/api/teams").then((r) => r.json()).then((json) => { if (json.success) setTeams(json.data || []); });
+    // 检查是否已配置 AI 密钥
+    fetch("/api/user/ai-keys").then((r) => r.json()).then((json) => {
+      if (json.success) {
+        const hasStored = (json.data || []).some((p: any) => p.configured);
+        const hasLegacy = !!(json.legacyKeys?.openai || json.legacyKeys?.anthropic || json.legacyKeys?.deepseek);
+        setHasAIKeys(hasStored || hasLegacy);
+      } else setHasAIKeys(false);
+    }).catch(() => setHasAIKeys(false));
   }, []);
 
   // 选择数据源 → 用 AI 生成推荐（支持表级选择）
@@ -170,6 +179,20 @@ export function AICreateDashboardForm() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI 创建看板</h1>
         <p className="mt-2 text-gray-500">选择数据集 → AI 分析字段 → 推荐可视化需求 → 一键生成</p>
       </div>
+
+      {/* AI 密钥未配置提醒 */}
+      {hasAIKeys === false && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+          <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">未配置 AI 密钥</p>
+            <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+              看板将使用本地规则生成，AI 分析与推荐功能不可用。
+              <a href="/dashboard/settings/ai" className="ml-1 font-medium underline hover:text-amber-800 dark:hover:text-amber-200">前往配置 <Key className="inline h-3 w-3" /></a>
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* 看板名称 */}
       <Card>

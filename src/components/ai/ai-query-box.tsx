@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { LineChartWidget, BarChartWidget, PieChartWidget, DataTableWidget } from "@/components/dashboard/charts";
-import { Sparkles, RefreshCw, Lightbulb, X, Send, Database } from "lucide-react";
+import { Sparkles, RefreshCw, Lightbulb, X, Send, Database, AlertTriangle, Key } from "lucide-react";
 import { hashColor as hashC } from "@/lib/utils";
 
 type AIResult = { type: "line" | "bar" | "pie" | "table"; chartTitle: string; explanation: string; result: any[] };
@@ -21,9 +21,21 @@ export function AIQueryBox() {
   const [result, setResult] = useState<AIResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [hasAIKeys, setHasAIKeys] = useState<boolean | null>(null); // null = 检查中
 
   useEffect(() => {
     fetch("/api/datasources").then((r) => r.json()).then((json) => { if (json.success) setDataSources(json.data || []); });
+  }, []);
+
+  // 检查是否已配置 AI 密钥
+  useEffect(() => {
+    fetch("/api/user/ai-keys").then((r) => r.json()).then((json) => {
+      if (json.success) {
+        const hasStored = (json.data || []).some((p: any) => p.configured);
+        const hasLegacy = !!(json.legacyKeys?.openai || json.legacyKeys?.anthropic || json.legacyKeys?.deepseek);
+        setHasAIKeys(hasStored || hasLegacy);
+      } else setHasAIKeys(false);
+    }).catch(() => setHasAIKeys(false));
   }, []);
 
   const fileSources = dataSources.filter((ds) => ds.type === "file");
@@ -78,6 +90,20 @@ export function AIQueryBox() {
         <p className="text-sm text-violet-600/70 dark:text-violet-400/70">选择数据集后用中文描述你想看的数据</p>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* AI 密钥未配置提醒 */}
+        {hasAIKeys === false && (
+          <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">未配置 AI 密钥</p>
+              <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                查询将使用关键词匹配返回模拟数据。
+                <a href="/dashboard/settings/ai" className="ml-1 font-medium underline hover:text-amber-800 dark:hover:text-amber-200">前往配置 <Key className="inline h-3 w-3" /></a>
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* 数据集选择 */}
         <div className="space-y-2">
           {/* 类型切换 */}
